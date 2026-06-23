@@ -1,7 +1,8 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useId, useRef } from "react";
 import { RosterCard } from "@/components/roster/RosterCard";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,63 +12,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Roster } from "@/lib/rosters";
+import {
+  MAX_PUBLIC_ROSTERS,
+  ROSTER_SORTS,
+  type Roster,
+  type RosterSort,
+} from "@/lib/rosters";
 
-const SORTS = {
-  recent: {
-    label: "Recently edited",
-    compare: (a: Roster, b: Roster) => b.updatedAt.localeCompare(a.updatedAt),
-  },
-  likes: {
-    label: "Most liked",
-    compare: (a: Roster, b: Roster) => b.likes - a.likes,
-  },
-  rating: {
-    label: "Highest rated",
-    compare: (a: Roster, b: Roster) => b.rating - a.rating,
-  },
-  ovr: {
-    label: "Highest OVR",
-    compare: (a: Roster, b: Roster) => b.ovr - a.ovr,
-  },
-  name: {
-    label: "Name (A–Z)",
-    compare: (a: Roster, b: Roster) => a.name.localeCompare(b.name),
-  },
-} satisfies Record<
-  string,
-  { label: string; compare: (a: Roster, b: Roster) => number }
->;
+const ALL_PRESETS = "all";
 
-type SortKey = keyof typeof SORTS;
-
-export function PublicRosters({ rosters }: { rosters: Roster[] }) {
-  const [query, setQuery] = useState("");
-  const [preset, setPreset] = useState("all");
-  const [sort, setSort] = useState<SortKey>("recent");
+export function PublicRosters({
+  rosters,
+  presets,
+  query,
+  preset,
+  sort,
+}: {
+  rosters: Roster[];
+  presets: string[];
+  query: string;
+  preset: string;
+  sort: RosterSort;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const debounce = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const searchId = useId();
   const presetId = useId();
   const sortId = useId();
 
-  const presets = useMemo(
-    () => Array.from(new Set(rosters.map((r) => r.preset))).sort(),
-    [rosters],
+  // Push an updated query string; the server re-queries and streams new rosters.
+  const setParam = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) params.set(key, value);
+      else params.delete(key);
+      router.replace(`${pathname}?${params}`, { scroll: false });
+    },
+    [router, pathname, searchParams],
   );
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return rosters
-      .filter((r) => preset === "all" || r.preset === preset)
-      .filter(
-        (r) =>
-          q === "" ||
-          r.name.toLowerCase().includes(q) ||
-          r.preset.toLowerCase().includes(q) ||
-          (r.author?.toLowerCase().includes(q) ?? false),
-      )
-      .sort(SORTS[sort].compare);
-  }, [rosters, query, preset, sort]);
+  const onSearch = (value: string) => {
+    clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => setParam("q", value), 300);
+  };
+
+  const atLimit = rosters.length >= MAX_PUBLIC_ROSTERS;
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,9 +76,9 @@ export function PublicRosters({ rosters }: { rosters: Roster[] }) {
             <Input
               id={searchId}
               type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, preset, or creator"
+              defaultValue={query}
+              onChange={(e) => onSearch(e.target.value)}
+              placeholder="Search by name or preset"
               className="pl-9"
             />
           </div>
@@ -99,12 +91,17 @@ export function PublicRosters({ rosters }: { rosters: Roster[] }) {
           >
             Preset
           </label>
-          <Select value={preset} onValueChange={setPreset}>
+          <Select
+            value={preset || ALL_PRESETS}
+            onValueChange={(v) =>
+              setParam("preset", v === ALL_PRESETS ? "" : v)
+            }
+          >
             <SelectTrigger id={presetId} className="w-full sm:w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All presets</SelectItem>
+              <SelectItem value={ALL_PRESETS}>All presets</SelectItem>
               {presets.map((p) => (
                 <SelectItem key={p} value={p}>
                   {p}
@@ -121,12 +118,12 @@ export function PublicRosters({ rosters }: { rosters: Roster[] }) {
           >
             Sort by
           </label>
-          <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+          <Select value={sort} onValueChange={(v) => setParam("sort", v)}>
             <SelectTrigger id={sortId} className="w-full sm:w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(SORTS).map(([key, { label }]) => (
+              {Object.entries(ROSTER_SORTS).map(([key, label]) => (
                 <SelectItem key={key} value={key}>
                   {label}
                 </SelectItem>
@@ -137,12 +134,14 @@ export function PublicRosters({ rosters }: { rosters: Roster[] }) {
       </search>
 
       <p aria-live="polite" className="text-sm text-muted-foreground">
-        Showing {results.length} of {rosters.length} rosters
+        Showing {rosters.length} roster{rosters.length === 1 ? "" : "s"}
+        {atLimit &&
+          ` (max ${MAX_PUBLIC_ROSTERS} — refine your search to narrow)`}
       </p>
 
-      {results.length > 0 ? (
+      {rosters.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((roster) => (
+          {rosters.map((roster) => (
             <RosterCard key={roster.id} roster={roster} />
           ))}
         </div>

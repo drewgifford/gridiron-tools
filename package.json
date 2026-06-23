@@ -9,7 +9,9 @@
     "lint": "biome check",
     "lint:fix": "biome check --write --unsafe",
     "format": "biome format --write",
-    "schema:generate": "drizzle-kit generate"
+    "schema:generate": "drizzle-kit generate",
+    "schema:migrate": "drizzle-kit migrate",
+    "db:seed": "bun run etc/scripts/seed.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.7",

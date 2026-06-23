@@ -1,6 +1,5 @@
-// temp
 export type Roster = {
-  id: string;
+  id: number;
   name: string;
   preset: string;
   ovr: number;
@@ -12,152 +11,20 @@ export type Roster = {
   createdAt: string;
   updatedAt: string;
 };
+export const MAX_PUBLIC_ROSTERS = 50;
 
-export const myRosters: Roster[] = [
-  {
-    id: "my-prairie-hawks",
-    name: "Prairie Hawks",
-    preset: "Balanced",
-    ovr: 87,
-    offenseOvr: 85,
-    defenseOvr: 88,
-    rating: 4.5,
-    likes: 128,
-    author: "You",
-    createdAt: "2026-05-02T14:00:00Z",
-    updatedAt: "2026-06-18T09:30:00Z",
-  },
-  {
-    id: "my-tempo-raiders",
-    name: "Tempo Raiders",
-    preset: "Spread Option",
-    ovr: 88,
-    offenseOvr: 89,
-    defenseOvr: 86,
-    rating: 4,
-    likes: 210,
-    author: "You",
-    createdAt: "2026-05-19T08:00:00Z",
-    updatedAt: "2026-06-20T13:15:00Z",
-  },
-];
+export const ROSTER_SORTS = {
+  recent: "Recently edited",
+  likes: "Most liked",
+  rating: "Highest rated",
+  ovr: "Highest OVR",
+  name: "Name (A–Z)",
+} as const;
 
-export const publicRosters: Roster[] = [
-  {
-    id: "desert-gunslingers",
-    name: "Desert Gunslingers",
-    preset: "Air Raid",
-    ovr: 90,
-    offenseOvr: 94,
-    defenseOvr: 84,
-    rating: 5,
-    likes: 342,
-    author: "AirRaidAndy",
-    createdAt: "2026-04-21T18:10:00Z",
-    updatedAt: "2026-06-12T22:05:00Z",
-  },
-  {
-    id: "smashmouth-u",
-    name: "Smashmouth U",
-    preset: "Ground & Pound",
-    ovr: 84,
-    offenseOvr: 86,
-    defenseOvr: 82,
-    rating: 3.5,
-    likes: 56,
-    author: "CoachK",
-    createdAt: "2026-03-15T11:45:00Z",
-    updatedAt: "2026-05-30T16:20:00Z",
-  },
-  {
-    id: "iron-curtain",
-    name: "Iron Curtain",
-    preset: "4-3 Defense",
-    ovr: 86,
-    offenseOvr: 80,
-    defenseOvr: 92,
-    rating: 2.5,
-    likes: 19,
-    author: "BlitzBob",
-    createdAt: "2026-02-28T09:00:00Z",
-    updatedAt: "2026-06-01T10:40:00Z",
-  },
-  {
-    id: "capital-city-pros",
-    name: "Capital City Pros",
-    preset: "Pro Style",
-    ovr: 91,
-    offenseOvr: 90,
-    defenseOvr: 91,
-    rating: 5,
-    likes: 415,
-    author: "GridGuru",
-    createdAt: "2026-06-05T20:30:00Z",
-    updatedAt: "2026-06-21T19:00:00Z",
-  },
-  {
-    id: "bayou-bombers",
-    name: "Bayou Bombers",
-    preset: "Air Raid",
-    ovr: 89,
-    offenseOvr: 93,
-    defenseOvr: 83,
-    rating: 4,
-    likes: 173,
-    author: "GeauxDeep",
-    createdAt: "2026-04-02T15:20:00Z",
-    updatedAt: "2026-06-09T11:00:00Z",
-  },
-  {
-    id: "mountain-maulers",
-    name: "Mountain Maulers",
-    preset: "Ground & Pound",
-    ovr: 85,
-    offenseOvr: 88,
-    defenseOvr: 81,
-    rating: 3,
-    likes: 88,
-    author: "RunItTwice",
-    createdAt: "2026-03-29T12:00:00Z",
-    updatedAt: "2026-05-22T17:45:00Z",
-  },
-  {
-    id: "coastal-cannons",
-    name: "Coastal Cannons",
-    preset: "Balanced",
-    ovr: 88,
-    offenseOvr: 87,
-    defenseOvr: 89,
-    rating: 4.5,
-    likes: 264,
-    author: "TideRoller",
-    createdAt: "2026-05-11T09:15:00Z",
-    updatedAt: "2026-06-19T08:30:00Z",
-  },
-  {
-    id: "river-city-rebels",
-    name: "River City Rebels",
-    preset: "Spread Option",
-    ovr: 86,
-    offenseOvr: 88,
-    defenseOvr: 83,
-    rating: 3.5,
-    likes: 121,
-    author: "OptionOllie",
-    createdAt: "2026-04-17T19:40:00Z",
-    updatedAt: "2026-06-15T14:10:00Z",
-  },
-  {
-    id: "summit-sentinels",
-    name: "Summit Sentinels",
-    preset: "Pro Style",
-    ovr: 90,
-    offenseOvr: 89,
-    defenseOvr: 90,
-    rating: 5,
-    likes: 388,
-    author: "ProStylePat",
-    createdAt: "2026-05-26T10:05:00Z",
-    updatedAt: "2026-06-17T20:25:00Z",
-  },
-];
+export type RosterSort = keyof typeof ROSTER_SORTS;
+
+export function parseSort(value: unknown): RosterSort {
+  return typeof value === "string" && value in ROSTER_SORTS
+    ? (value as RosterSort)
+    : "recent";
+}
