@@ -1,23 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BulkPlayerEditor } from "@/components/roster/players/BulkPlayerEditor";
 import { PlayerEditor } from "@/components/roster/players/PlayerEditor";
 import { RosterPlayers } from "@/components/roster/players/RosterPlayers";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { TabsContent } from "@/components/ui/tabs";
+import { useIsDesktop } from "@/lib/client/use-is-desktop";
 import type { GeneratedPlayer } from "@/lib/roster-generator";
 import { cn } from "@/lib/utils";
-
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const update = () => setIsDesktop(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-  return isDesktop;
-}
 
 export function PlayersStep({
   players,

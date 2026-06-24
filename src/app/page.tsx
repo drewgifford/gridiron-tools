@@ -1,4 +1,5 @@
-import { ArrowRight, HardHat, Wrench } from "lucide-react";
+import { football } from "@lucide/lab";
+import { ArrowRight, HardHat, Icon, Wrench } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import Container from "@/components/Container";
@@ -25,7 +26,7 @@ function ToolCard({
 }) {
   return (
     <Link href={href} className="group">
-      <Card className="h-full transition-colors hover:bg-muted/40">
+      <Card className="h-full transition-shadow hover:outline hover:outline-primary/20 dark:hover:ring-primary/40">
         <CardHeader>
           <div className="mb-1 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             {icon}
@@ -58,17 +59,21 @@ export default function Home() {
         <div className="mx-auto flex max-w-4xl flex-col gap-16 px-4 py-16">
           <section className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
             <Heading1>
-              Your toolkit for{" "}
-              <span className="text-primary">Team Builder</span>
+              <span className="flex items-center gap-1">
+                <Icon iconNode={football} className="w-8 h-8" />
+                <span>
+                  gridiron
+                  <span className="text-primary">.tools</span>
+                </span>
+              </span>
             </Heading1>
             <Text className="text-lg text-muted-foreground">
               <span className="text-foreground">gridiron.tools</span> is a
               growing collection of utilities for College Football 27 and
-              Madden. Create rosters, rate your program, and share your builds
-              with the community.
+              Madden. You're probably here for the Roster Builder.
             </Text>
             <Button asChild size="lg">
-              <Link href="/roster-creator">
+              <Link href="/roster-builder">
                 Open Roster Builder
                 <ArrowRight />
               </Link>
@@ -81,9 +86,6 @@ export default function Home() {
           >
             <div className="flex flex-col gap-1">
               <Heading2 id="tools-heading">Tools</Heading2>
-              <Text className="text-muted-foreground">
-                What&apos;s available right now.
-              </Text>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <ToolCard

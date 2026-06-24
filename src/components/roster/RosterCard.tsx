@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { Roster } from "@/lib/schema/roster";
+import { ovrBoxClass } from "@/lib/util/ovr-color";
 import { cn } from "@/lib/utils";
 import { Text } from "../typography/Heading";
 
@@ -27,44 +28,46 @@ function formatDate(iso: string) {
   return dateFormatter.format(new Date(iso));
 }
 
-function Stat({
-  label,
-  value,
-  highlight,
-}: {
-  label: string;
-  value: number;
-  highlight?: boolean;
-}) {
+function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col items-center rounded-xl bg-muted/40 py-2">
-      <span
-        className={cn(
-          "text-xl font-semibold tabular-nums",
-          highlight && "text-primary",
-        )}
-      >
-        {value}
-      </span>
-      <span className="text-xs text-muted-foreground">{label}</span>
+    <div
+      className={cn(
+        "flex flex-col items-center rounded-xl py-2",
+        ovrBoxClass(value),
+      )}
+    >
+      <span className="text-xl font-semibold tabular-nums">{value}</span>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
     </div>
   );
 }
 
-export function RosterCard({ roster }: { roster: Roster }) {
+export function RosterCard({
+  roster,
+  isSignedIn,
+}: {
+  roster: Roster;
+  isSignedIn: boolean;
+}) {
   return (
-    <Card size="sm">
+    <Card
+      size="sm"
+      className="relative cursor-pointer transition-shadow hover:outline hover:outline-primary/20 dark:hover:ring-primary/40"
+    >
       <CardHeader>
         <CardTitle className="text-base">
           <Link
-            href={`/roster-creator/${roster.id}`}
-            className="hover:underline"
+            href={`/roster-builder/roster/${roster.id}`}
+            className="after:absolute after:inset-0"
           >
             {roster.name}
           </Link>
         </CardTitle>
         <CardDescription className="flex items-center gap-2">
           <Badge variant="secondary">{roster.preset}</Badge>
+          {roster.status === "draft" && (
+            <Badge className="bg-muted text-muted-foreground">Draft</Badge>
+          )}
           {roster.user ? (
             <span className="flex items-center gap-1">
               <User className="size-3.5" />
@@ -78,11 +81,15 @@ export function RosterCard({ roster }: { roster: Roster }) {
           )}
         </CardDescription>
         <CardAction>
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-xs text-muted-foreground">
-              Program rating
-            </span>
-            <StarRating rating={roster.rating} />
+          <div className="relative z-10">
+            <RosterActions
+              rosterId={roster.id}
+              rosterName={roster.name}
+              likes={roster.likes}
+              dislikes={roster.dislikes}
+              userVote={roster.userVote}
+              isSignedIn={isSignedIn}
+            />
           </div>
         </CardAction>
       </CardHeader>
@@ -94,17 +101,15 @@ export function RosterCard({ roster }: { roster: Roster }) {
         )}
 
         <div className="grid grid-cols-3 gap-2">
-          <Stat label="OVR" value={roster.ovr} highlight />
+          <Stat label="OVR" value={roster.ovr} />
           <Stat label="Offense" value={roster.offenseOvr} />
           <Stat label="Defense" value={roster.defenseOvr} />
         </div>
-      </CardContent>
-      <CardFooter className="justify-between border-t">
-        <span className="text-xs text-muted-foreground">
+
+        <Text className="text-xs text-muted-foreground my-2!">
           Edited {formatDate(roster.updatedAt)}
-        </span>
-        <RosterActions roster={roster} />
-      </CardFooter>
+        </Text>
+      </CardContent>
     </Card>
   );
 }

@@ -26,27 +26,34 @@ function SelectField<T extends string>({
   value,
   options,
   onChange,
+  readOnly,
 }: {
   label: string;
   value: T;
   options: readonly T[];
   onChange: (value: T) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
       <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Select value={value} onValueChange={(v) => onChange(v as T)}>
-        <SelectTrigger className="h-8 w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+
+      {readOnly ? (
+        <span>{value}</span>
+      ) : (
+        <Select value={value} onValueChange={(v) => onChange(v as T)}>
+          <SelectTrigger className="h-8 w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }
@@ -58,6 +65,7 @@ function NumberField({
   max,
   hint,
   onChange,
+  readOnly,
 }: {
   label: string;
   value: number;
@@ -65,6 +73,7 @@ function NumberField({
   max: number;
   hint?: string;
   onChange: (value: number) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -74,15 +83,20 @@ function NumberField({
           <span className="text-muted-foreground/60"> · {hint}</span>
         ) : null}
       </Label>
-      <Input
-        type="number"
-        min={min}
-        max={max}
-        value={value}
-        onChange={(e) =>
-          onChange(clamp(Math.round(Number(e.target.value) || 0), min, max))
-        }
-      />
+
+      {readOnly ? (
+        <span>{value}</span>
+      ) : (
+        <Input
+          type="number"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) =>
+            onChange(clamp(Math.round(Number(e.target.value) || 0), min, max))
+          }
+        />
+      )}
     </div>
   );
 }
@@ -90,9 +104,11 @@ function NumberField({
 export function PlayerTraitsEditor({
   player,
   onChange,
+  readOnly,
 }: {
   player: GeneratedPlayer;
   onChange: (patch: Partial<GeneratedPlayer>) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -102,6 +118,7 @@ export function PlayerTraitsEditor({
           value={player.classYear ?? "FR"}
           options={PlayerYears}
           onChange={(classYear) => onChange({ classYear })}
+          readOnly={readOnly}
         />
         <NumberField
           label="Jersey #"
@@ -109,6 +126,7 @@ export function PlayerTraitsEditor({
           min={0}
           max={99}
           onChange={(jerseyNumber) => onChange({ jerseyNumber })}
+          readOnly={readOnly}
         />
         <NumberField
           label="Age"
@@ -116,6 +134,7 @@ export function PlayerTraitsEditor({
           min={16}
           max={30}
           onChange={(age) => onChange({ age })}
+          readOnly={readOnly}
         />
         <NumberField
           label="Height"
@@ -124,6 +143,7 @@ export function PlayerTraitsEditor({
           max={90}
           hint={formatHeight(player.heightInches)}
           onChange={(heightInches) => onChange({ heightInches })}
+          readOnly={readOnly}
         />
         <NumberField
           label="Weight"
@@ -132,12 +152,14 @@ export function PlayerTraitsEditor({
           max={400}
           hint="lbs"
           onChange={(weightLbs) => onChange({ weightLbs })}
+          readOnly={readOnly}
         />
         <SelectField
           label="Handedness"
           value={player.handedness ?? "Right"}
           options={Handednesses}
           onChange={(handedness) => onChange({ handedness })}
+          readOnly={readOnly}
         />
         <NumberField
           label="HS stars"
@@ -145,18 +167,21 @@ export function PlayerTraitsEditor({
           min={1}
           max={5}
           onChange={(hsStarRating) => onChange({ hsStarRating })}
+          readOnly={readOnly}
         />
         <SelectField
           label="Dev trait"
           value={player.devTrait ?? "Normal"}
           options={DevTraits}
           onChange={(devTrait) => onChange({ devTrait })}
+          readOnly={readOnly}
         />
         <SelectField
           label="Potential"
           value={player.potential ?? "Low"}
           options={PlayerPotentials}
           onChange={(potential) => onChange({ potential })}
+          readOnly={readOnly}
         />
         <div className="col-span-2">
           <SelectField
@@ -164,6 +189,7 @@ export function PlayerTraitsEditor({
             value={player.dealbreaker ?? "None"}
             options={Dealbreakers}
             onChange={(dealbreaker) => onChange({ dealbreaker })}
+            readOnly={readOnly}
           />
         </div>
       </div>

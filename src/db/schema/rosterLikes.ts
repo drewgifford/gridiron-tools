@@ -1,5 +1,6 @@
 import { index, pgTable, primaryKey, serial, text } from "drizzle-orm/pg-core";
 import { metaFields } from "../meta";
+import { rosterVoteEnum } from "./enum";
 import { rostersTable } from "./roster";
 
 export const rosterLikes = pgTable(
@@ -9,6 +10,7 @@ export const rosterLikes = pgTable(
       .notNull()
       .references(() => rostersTable.id, { onDelete: "cascade" }),
     userId: text().notNull(),
+    vote: rosterVoteEnum().notNull().default("like"),
     ...metaFields,
   },
   (table) => [

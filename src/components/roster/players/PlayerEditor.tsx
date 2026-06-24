@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import Image from "next/image";
 import { HeadPicker } from "@/components/roster/players/HeadPicker";
 import { PlayerAbilitiesEditor } from "@/components/roster/players/PlayerAbilitiesEditor";
 import { PlayerStatsEditor } from "@/components/roster/players/PlayerStatsEditor";
@@ -23,6 +24,7 @@ import {
   withRecomputedOverall,
 } from "@/lib/roster-generator/stats";
 import { ovrBoxClass } from "@/lib/util/ovr-color";
+import { getPlayerHeadUrl } from "@/lib/util/player-heads";
 import { cn } from "@/lib/utils";
 
 function SectionDivider({ label }: { label: string }) {
@@ -41,11 +43,13 @@ export function PlayerEditor({
   onChange,
   onRegenerate,
   onClose,
+  readOnly = false,
 }: {
   player: GeneratedPlayer;
-  onChange: (next: GeneratedPlayer) => void;
+  onChange?: (next: GeneratedPlayer) => void;
   onRegenerate?: () => void;
   onClose: () => void;
+  readOnly?: boolean;
 }) {
   const archetype = getArchetype(player.position, player.archetype);
   const archetypes = PositionArchetypes[player.position];
@@ -56,28 +60,52 @@ export function PlayerEditor({
     : [];
 
   const setStats = (stats: PlayerStats) =>
-    onChange(withRecomputedOverall({ ...player, stats }));
+    onChange?.(withRecomputedOverall({ ...player, stats }));
 
   const setStat = (stat: PlayerStat, value: number) =>
     setStats({ ...player.stats, [stat]: value });
 
-  const setArchetype = (name: string) =>
-    onChange(withRecomputedOverall({ ...player, archetype: name }));
+  const setArchetype = (name: string) => {
+    // Physical abilities are archetype-specific — drop any the new archetype
+    // doesn't offer. Mental abilities are position-group-wide, so they stay.
+    const allowed = new Set(
+      getArchetype(player.position, name)?.abilities.map((a) => a.name) ?? [],
+    );
+    const physicalAbilities = (player.physicalAbilities ?? []).filter((a) =>
+      allowed.has(a.name),
+    );
+    onChange?.(
+      withRecomputedOverall({ ...player, archetype: name, physicalAbilities }),
+    );
+  };
 
   const applyPatch = (patch: Partial<GeneratedPlayer>) =>
-    onChange({ ...player, ...patch });
+    onChange?.({ ...player, ...patch });
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <HeadPicker
-            skinToneIndex={player.skinToneIndex ?? 0}
-            headIndex={player.headIndex ?? 0}
-            onChange={(skinToneIndex, headIndex) =>
-              applyPatch({ skinToneIndex, headIndex })
-            }
-          />
+          {readOnly ? (
+            <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-muted/40">
+              <Image
+                src={getPlayerHeadUrl(player)}
+                alt=""
+                width={48}
+                height={48}
+                unoptimized
+                className="size-full object-contain object-top"
+              />
+            </div>
+          ) : (
+            <HeadPicker
+              skinToneIndex={player.skinToneIndex ?? 0}
+              headIndex={player.headIndex ?? 0}
+              onChange={(skinToneIndex, headIndex) =>
+                applyPatch({ skinToneIndex, headIndex })
+              }
+            />
+          )}
           <span
             className={cn(
               "flex size-12 shrink-0 flex-col items-center justify-center rounded-md text-base font-semibold tabular-nums",
@@ -108,83 +136,101 @@ export function PlayerEditor({
           <X />
         </Button>
       </div>
+      <div className={"flex flex-col gap-5"}>
+        {!readOnly && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <Label
+                htmlFor="edit-first"
+                className="text-xs text-muted-foreground"
+              >
+                First name
+              </Label>
+              <Input
+                id="edit-first"
+                value={player.firstName}
+                onChange={(e) => applyPatch({ firstName: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <Label
+                htmlFor="edit-last"
+                className="text-xs text-muted-foreground"
+              >
+                Last name
+              </Label>
+              <Input
+                id="edit-last"
+                value={player.lastName}
+                onChange={(e) => applyPatch({ lastName: e.target.value })}
+              />
+            </div>
+          </div>
+        )}
 
-      <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
-          <Label htmlFor="edit-first" className="text-xs text-muted-foreground">
-            First name
+          <Label
+            htmlFor="edit-archetype"
+            className="text-xs text-muted-foreground"
+          >
+            Archetype
           </Label>
-          <Input
-            id="edit-first"
-            value={player.firstName}
-            onChange={(e) => applyPatch({ firstName: e.target.value })}
-          />
+          {readOnly ? (
+            <span>{player.archetype}</span>
+          ) : (
+            <Select value={player.archetype} onValueChange={setArchetype}>
+              <SelectTrigger id="edit-archetype" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {archetypes.map((option) => {
+                  const ovr = calculateOvr(option.ovrFormula, player.stats);
+                  return (
+                    <SelectItem key={option.name} value={option.name}>
+                      <span className="flex w-full items-center justify-between gap-4">
+                        <span>{option.name}</span>
+                        <span className="text-muted-foreground tabular-nums">
+                          {ovr} OVR
+                        </span>
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          )}
         </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="edit-last" className="text-xs text-muted-foreground">
-            Last name
-          </Label>
-          <Input
-            id="edit-last"
-            value={player.lastName}
-            onChange={(e) => applyPatch({ lastName: e.target.value })}
-          />
-        </div>
+
+        <SectionDivider label="Stats" />
+        <PlayerStatsEditor
+          stats={player.stats}
+          weightedStats={weightedStats}
+          onChange={setStats}
+          readOnly={readOnly}
+        />
+
+        <SectionDivider label="Attributes" />
+        <PlayerTraitsEditor
+          player={player}
+          onChange={applyPatch}
+          readOnly={readOnly}
+        />
+
+        <SectionDivider label="Abilities" />
+        <PlayerAbilitiesEditor
+          position={player.position}
+          archetypeName={player.archetype}
+          stats={player.stats}
+          physical={player.physicalAbilities ?? []}
+          mental={player.mentalAbilities ?? []}
+          onSetStat={setStat}
+          onPhysicalChange={(physicalAbilities) =>
+            applyPatch({ physicalAbilities })
+          }
+          onMentalChange={(mentalAbilities) => applyPatch({ mentalAbilities })}
+          readOnly={readOnly}
+        />
       </div>
-
-      <div className="flex flex-col gap-1">
-        <Label
-          htmlFor="edit-archetype"
-          className="text-xs text-muted-foreground"
-        >
-          Archetype
-        </Label>
-        <Select value={player.archetype} onValueChange={setArchetype}>
-          <SelectTrigger id="edit-archetype" className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {archetypes.map((option) => {
-              const ovr = calculateOvr(option.ovrFormula, player.stats);
-              return (
-                <SelectItem key={option.name} value={option.name}>
-                  <span className="flex w-full items-center justify-between gap-4">
-                    <span>{option.name}</span>
-                    <span className="text-muted-foreground tabular-nums">
-                      {ovr} OVR
-                    </span>
-                  </span>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <SectionDivider label="Stats" />
-      <PlayerStatsEditor
-        stats={player.stats}
-        weightedStats={weightedStats}
-        onChange={setStats}
-      />
-
-      <SectionDivider label="Attributes" />
-      <PlayerTraitsEditor player={player} onChange={applyPatch} />
-
-      <SectionDivider label="Abilities" />
-      <PlayerAbilitiesEditor
-        position={player.position}
-        archetypeName={player.archetype}
-        stats={player.stats}
-        physical={player.physicalAbilities ?? []}
-        mental={player.mentalAbilities ?? []}
-        onSetStat={setStat}
-        onPhysicalChange={(physicalAbilities) =>
-          applyPatch({ physicalAbilities })
-        }
-        onMentalChange={(mentalAbilities) => applyPatch({ mentalAbilities })}
-      />
-
       {onRegenerate && (
         <div className="flex justify-end border-t pt-4">
           <RegenerateButton count={1} onConfirm={onRegenerate} />

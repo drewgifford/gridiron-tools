@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -14,7 +15,12 @@ import type { ArchetypeAbility } from "@/lib/domain/archetypes";
 import { getPositionGroup, type RosterPosition } from "@/lib/domain/positions";
 import type { PlayerStat, PlayerStats } from "@/lib/domain/stats";
 import { getArchetype } from "@/lib/roster-generator/stats";
-import { ABILITY_TIER_LABELS } from "@/lib/util/ability-tier";
+import {
+  ABILITY_TIER_CLASSES,
+  ABILITY_TIER_LABELS,
+  tierIndex,
+} from "@/lib/util/ability-tier";
+import { cn } from "@/lib/utils";
 
 export function setLevel<T extends { name: string; level: number }>(
   list: T[],
@@ -100,6 +106,7 @@ export function PhysicalAbilitiesEditor({
   physical,
   onSetStat,
   onPhysicalChange,
+  readOnly,
 }: {
   position: RosterPosition;
   archetypeName: string;
@@ -107,6 +114,7 @@ export function PhysicalAbilitiesEditor({
   physical: PlayerPhysicalAbility[];
   onSetStat: (stat: PlayerStat, value: number) => void;
   onPhysicalChange: (abilities: PlayerPhysicalAbility[]) => void;
+  readOnly?: boolean;
 }) {
   const archetype = getArchetype(position, archetypeName);
   const physicalPool = archetype?.abilities ?? [];
@@ -120,6 +128,7 @@ export function PhysicalAbilitiesEditor({
         {physicalPool.map((ability) => {
           const level =
             physical.find((p) => p.name === ability.name)?.level ?? 0;
+          const levelIndex = tierIndex(level);
           return (
             <div
               key={ability.name}
@@ -127,12 +136,23 @@ export function PhysicalAbilitiesEditor({
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-medium">{ability.name}</span>
-                <TierSelect
-                  level={level}
-                  onChange={(l) =>
-                    onPhysicalChange(setLevel(physical, ability.name, l))
-                  }
-                />
+                {readOnly ? (
+                  <Badge
+                    className={cn(
+                      ABILITY_TIER_CLASSES[levelIndex],
+                      "text-sm rounded-lg",
+                    )}
+                  >
+                    {ABILITY_TIER_LABELS[levelIndex]}
+                  </Badge>
+                ) : (
+                  <TierSelect
+                    level={level}
+                    onChange={(l) =>
+                      onPhysicalChange(setLevel(physical, ability.name, l))
+                    }
+                  />
+                )}
               </div>
               {level > 0 && (
                 <RequirementHint
@@ -154,10 +174,12 @@ export function MentalAbilitiesEditor({
   position,
   mental,
   onMentalChange,
+  readOnly,
 }: {
   position: RosterPosition;
   mental: PlayerMentalAbility[];
   onMentalChange: (abilities: PlayerMentalAbility[]) => void;
+  readOnly?: boolean;
 }) {
   const group = getPositionGroup(position).id;
   const mentalPool = [...new Set(POSITION_META[group].mentalAbilities)];
@@ -170,16 +192,32 @@ export function MentalAbilitiesEditor({
       <div className="flex flex-col gap-1.5">
         {mentalPool.map((name) => {
           const level = mental.find((m) => m.name === name)?.level ?? 0;
+          const levelIndex = level === 0 ? -1 : tierIndex(level);
           return (
             <div
               key={name}
               className="flex items-center justify-between gap-2 rounded-md bg-muted/20 p-2"
             >
               <span className="text-sm font-medium">{name}</span>
-              <TierSelect
-                level={level}
-                onChange={(l) => onMentalChange(setLevel(mental, name, l))}
-              />
+              {readOnly ? (
+                levelIndex === -1 ? (
+                  <span className="text-sm text-muted-foreground">N/A</span>
+                ) : (
+                  <Badge
+                    className={cn(
+                      ABILITY_TIER_CLASSES[levelIndex],
+                      "text-sm rounded-lg",
+                    )}
+                  >
+                    {ABILITY_TIER_LABELS[levelIndex]}
+                  </Badge>
+                )
+              ) : (
+                <TierSelect
+                  level={level}
+                  onChange={(l) => onMentalChange(setLevel(mental, name, l))}
+                />
+              )}
             </div>
           );
         })}
@@ -197,6 +235,7 @@ export function PlayerAbilitiesEditor({
   onSetStat,
   onPhysicalChange,
   onMentalChange,
+  readOnly,
 }: {
   position: RosterPosition;
   archetypeName: string;
@@ -206,6 +245,7 @@ export function PlayerAbilitiesEditor({
   onSetStat: (stat: PlayerStat, value: number) => void;
   onPhysicalChange: (abilities: PlayerPhysicalAbility[]) => void;
   onMentalChange: (abilities: PlayerMentalAbility[]) => void;
+  readOnly?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -216,11 +256,13 @@ export function PlayerAbilitiesEditor({
         physical={physical}
         onSetStat={onSetStat}
         onPhysicalChange={onPhysicalChange}
+        readOnly={readOnly}
       />
       <MentalAbilitiesEditor
         position={position}
         mental={mental}
         onMentalChange={onMentalChange}
+        readOnly={readOnly}
       />
     </div>
   );

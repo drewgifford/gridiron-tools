@@ -61,10 +61,12 @@ export function RosterPlayers({
   players,
   selected,
   onSelectionChange,
+  readOnly = false,
 }: {
   players: GeneratedPlayer[];
   selected: Set<number>;
   onSelectionChange: (next: Set<number>) => void;
+  readOnly?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [groupFilter, setGroupFilter] = useState<GroupFilter>("All");
@@ -187,7 +189,7 @@ export function RosterPlayers({
         </Select>
       </div>
 
-      {orderedIndices.length > 0 && (
+      {!readOnly && orderedIndices.length > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/20 px-3 py-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Checkbox
@@ -224,16 +226,18 @@ export function RosterPlayers({
           {groups.map((group) => (
             <section key={group.id} className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
-                <Checkbox
-                  checked={group.entries.every((e) => selected.has(e.index))}
-                  onCheckedChange={(v) =>
-                    setMany(
-                      group.entries.map((e) => e.index),
-                      v === true,
-                    )
-                  }
-                  aria-label={`Select all ${group.name}`}
-                />
+                {!readOnly && (
+                  <Checkbox
+                    checked={group.entries.every((e) => selected.has(e.index))}
+                    onCheckedChange={(v) =>
+                      setMany(
+                        group.entries.map((e) => e.index),
+                        v === true,
+                      )
+                    }
+                    aria-label={`Select all ${group.name}`}
+                  />
+                )}
                 <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
                   {group.name}
                 </h3>
@@ -247,9 +251,13 @@ export function RosterPlayers({
                     key={index}
                     player={player}
                     selected={selected.has(index)}
-                    checked={selected.has(index)}
-                    onCheckedChange={() => toggle(index)}
-                    onClick={(modifiers) => select(index, modifiers)}
+                    checked={readOnly ? undefined : selected.has(index)}
+                    onCheckedChange={readOnly ? undefined : () => toggle(index)}
+                    onClick={(modifiers) =>
+                      readOnly
+                        ? onSelectionChange(new Set([index]))
+                        : select(index, modifiers)
+                    }
                   />
                 ))}
               </div>

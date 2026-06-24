@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -8,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import {
   getPublicRostersCached,
   getRosterPresetsCached,
+  getUserVotes,
 } from "@/lib/db/rosters";
+import type { RosterVote } from "@/lib/domain/roster";
 import { parseSort } from "@/lib/rosters";
 
 export default async function RosterCreator({
@@ -21,14 +24,23 @@ export default async function RosterCreator({
   const activePreset = typeof preset === "string" ? preset : "";
   const sort = parseSort(sortParam);
 
-  const [publicRosters, presets] = await Promise.all([
+  const { userId } = await auth();
+  const [publicRosters, presets, userVotes] = await Promise.all([
     getPublicRostersCached({
       search: search || undefined,
       preset: activePreset || undefined,
       sort,
     }),
     getRosterPresetsCached(),
+    userId
+      ? getUserVotes(userId)
+      : Promise.resolve<Record<number, RosterVote>>({}),
   ]);
+
+  const rosters = publicRosters.map((roster) => ({
+    ...roster,
+    userVote: userVotes[roster.id] ?? null,
+  }));
 
   return (
     <Container>
@@ -43,7 +55,9 @@ export default async function RosterCreator({
           </div>
 
           <div className="flex gap-2">
-            <Button variant="ghost">My Rosters</Button>
+            <Link href="/roster-builder/my-rosters">
+              <Button variant="ghost">My Rosters</Button>
+            </Link>
 
             <Link href="/roster-builder/create">
               <Button>
@@ -61,11 +75,12 @@ export default async function RosterCreator({
           <Heading2 id="public-rosters-heading">Search public rosters</Heading2>
           <Suspense>
             <PublicRosters
-              rosters={publicRosters}
+              rosters={rosters}
               presets={presets}
               query={search}
               preset={activePreset}
               sort={sort}
+              isSignedIn={!!userId}
             />
           </Suspense>
         </section>

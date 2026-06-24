@@ -1,4 +1,5 @@
 import z from "zod";
+import { PublishStatuses, RosterVotes } from "@/lib/domain/roster";
 import { ZUser } from "./author";
 
 export const ZRoster = z.object({
@@ -6,11 +7,14 @@ export const ZRoster = z.object({
   name: z.string(),
   description: z.string(),
   preset: z.string(),
+  status: z.enum(PublishStatuses),
   ovr: z.int(),
   offenseOvr: z.int(),
   defenseOvr: z.int(),
   rating: z.number(),
   likes: z.int(),
+  dislikes: z.int(),
+  userVote: z.enum(RosterVotes).nullish(),
   userId: z.string(),
   user: ZUser.nullable(),
   createdAt: z.string(),

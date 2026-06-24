@@ -1,24 +1,36 @@
 import {
   and,
   asc,
-  count,
   desc,
   eq,
   getTableColumns,
   ilike,
   or,
   type SQL,
+  sql,
 } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db/db-client";
-import { rosterLikes, rostersTable } from "@/db/schema";
+import type { Player } from "@/db/schema";
+import { playersTable, rosterLikes, rostersTable } from "@/db/schema";
+import type { RosterVote } from "@/lib/domain/roster";
 import { MAX_PUBLIC_ROSTERS, type RosterSort } from "@/lib/rosters";
+import type { User } from "@/lib/schema/author";
 import { type Roster, ZRoster } from "@/lib/schema/roster";
 import { attachAuthors } from "@/lib/util/resolve-author";
 
+const likeCount =
+  sql<number>`count(*) filter (where ${rosterLikes.vote} = 'like')`.mapWith(
+    Number,
+  );
+const dislikeCount =
+  sql<number>`count(*) filter (where ${rosterLikes.vote} = 'dislike')`.mapWith(
+    Number,
+  );
+
 const SORT_ORDER: Record<RosterSort, SQL> = {
   recent: desc(rostersTable.updatedAt),
-  likes: desc(count(rosterLikes.rosterId)),
+  likes: desc(likeCount),
   rating: desc(rostersTable.rating),
   ovr: desc(rostersTable.ovr),
   name: asc(rostersTable.name),
@@ -36,7 +48,8 @@ async function listRosters({
   const query = db
     .select({
       ...getTableColumns(rostersTable),
-      likes: count(rosterLikes.rosterId),
+      likes: likeCount,
+      dislikes: dislikeCount,
     })
     .from(rostersTable)
     .leftJoin(rosterLikes, eq(rosterLikes.rosterId, rostersTable.id))
@@ -53,11 +66,13 @@ async function listRosters({
     name: row.name,
     description: row.description,
     preset: row.preset,
+    status: row.status,
     ovr: row.ovr,
     offenseOvr: row.offenseOvr,
     defenseOvr: row.defenseOvr,
     rating: row.rating,
     likes: row.likes,
+    dislikes: row.dislikes,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
     user: null,
@@ -69,6 +84,32 @@ async function listRosters({
 
 export function getRostersByUser(userId: string): Promise<Roster[]> {
   return listRosters({ where: eq(rostersTable.userId, userId) });
+}
+
+export function countRostersByUser(userId: string): Promise<number> {
+  return db.$count(rostersTable, eq(rostersTable.userId, userId));
+}
+
+/** The current user's vote per roster, keyed by roster id. Not cached (per-user). */
+export async function getUserVotes(
+  userId: string,
+): Promise<Record<number, RosterVote>> {
+  const rows = await db
+    .select({ rosterId: rosterLikes.rosterId, vote: rosterLikes.vote })
+    .from(rosterLikes)
+    .where(eq(rosterLikes.userId, userId));
+  return Object.fromEntries(rows.map((row) => [row.rosterId, row.vote]));
+}
+
+/** Like/dislike counts for a single roster. */
+export async function getRosterVotes(
+  rosterId: number,
+): Promise<{ likes: number; dislikes: number }> {
+  const [row] = await db
+    .select({ likes: likeCount, dislikes: dislikeCount })
+    .from(rosterLikes)
+    .where(eq(rosterLikes.rosterId, rosterId));
+  return { likes: row?.likes ?? 0, dislikes: row?.dislikes ?? 0 };
 }
 
 export type PublicRosterQuery = {
@@ -83,6 +124,7 @@ export function getPublicRosters({
   sort = "recent",
 }: PublicRosterQuery = {}): Promise<Roster[]> {
   const filters = [
+    eq(rostersTable.status, "published"),
     preset ? eq(rostersTable.preset, preset) : undefined,
     search
       ? or(
@@ -113,8 +155,32 @@ export async function getPublicRostersCached(query: PublicRosterQuery = {}) {
     ],
     {
       revalidate: 60,
+      tags: ["public-rosters"],
     },
   )();
+}
+
+export type RosterRow = typeof rostersTable.$inferSelect;
+export type RosterWithAuthor = RosterRow & { user: User | null };
+
+export async function getRosterWithPlayers(
+  id: number,
+): Promise<{ roster: RosterWithAuthor; players: Player[] } | null> {
+  const [roster] = await db
+    .select()
+    .from(rostersTable)
+    .where(eq(rostersTable.id, id))
+    .limit(1);
+  if (!roster) return null;
+
+  const [withAuthor] = await attachAuthors([roster]);
+  const players = await db
+    .select()
+    .from(playersTable)
+    .where(eq(playersTable.rosterId, id))
+    .orderBy(asc(playersTable.depthOrder));
+
+  return { roster: withAuthor, players };
 }
 
 export async function getRosterPresets(): Promise<string[]> {

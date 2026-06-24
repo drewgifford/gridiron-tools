@@ -6,7 +6,9 @@ import {
   type PlayerStats,
   Stats,
 } from "@/lib/domain/stats";
+import { ovrBoxClass } from "@/lib/util/ovr-color";
 import { clamp } from "@/lib/util/random";
+import { cn } from "@/lib/utils";
 
 const ALL_STATS = Object.keys(Stats) as PlayerStat[];
 
@@ -14,17 +16,34 @@ function StatInput({
   stat,
   value,
   onChange,
+  readOnly,
 }: {
   stat: PlayerStat;
   value: number;
   onChange: (value: number) => void;
+  readOnly?: boolean;
 }) {
+  if (readOnly)
+    return (
+      <div className="flex items-center justify-between gap-2 rounded-md bg-muted/30 px-2 py-1">
+        <span className="text-xs font-medium text-muted-foreground">
+          {stat}
+        </span>
+        <span
+          className={cn(ovrBoxClass(value), "px-1 rounded-md tabular-nums")}
+        >
+          {value}
+        </span>
+      </div>
+    );
+
   return (
     <label
       title={getStatName(stat)}
       className="flex items-center justify-between gap-2 rounded-md bg-muted/30 px-2 py-1"
     >
       <span className="text-xs font-medium text-muted-foreground">{stat}</span>
+
       <input
         type="number"
         min={1}
@@ -43,10 +62,12 @@ export function PlayerStatsEditor({
   stats,
   weightedStats,
   onChange,
+  readOnly = false,
 }: {
   stats: PlayerStats;
   weightedStats: PlayerStat[];
   onChange: (stats: PlayerStats) => void;
+  readOnly?: boolean;
 }) {
   const [showAll, setShowAll] = useState(false);
   const weighted = new Set(weightedStats);
@@ -67,6 +88,7 @@ export function PlayerStatsEditor({
               stat={stat}
               value={stats[stat]}
               onChange={(value) => set(stat, value)}
+              readOnly={readOnly}
             />
           ))}
         </div>
@@ -76,7 +98,7 @@ export function PlayerStatsEditor({
         <button
           type="button"
           onClick={() => setShowAll((v) => !v)}
-          className="flex items-center gap-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+          className="flex items-center gap-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase cursor-pointer"
         >
           {showAll ? (
             <ChevronDown className="size-3.5" />
@@ -93,6 +115,7 @@ export function PlayerStatsEditor({
                 stat={stat}
                 value={stats[stat]}
                 onChange={(value) => set(stat, value)}
+                readOnly={readOnly}
               />
             ))}
           </div>

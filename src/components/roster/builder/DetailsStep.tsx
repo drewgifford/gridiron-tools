@@ -12,12 +12,16 @@ export function DetailsStep({
   value,
   onChange,
   onNext,
+  nameError,
+  descriptionError,
 }: {
   value: RosterDetails;
   onChange: (value: RosterDetails) => void;
   onNext: () => void;
+  nameError?: string;
+  descriptionError?: string;
 }) {
-  const valid = value.name.trim().length > 0;
+  const valid = value.name.trim().length > 0 && !nameError && !descriptionError;
 
   return (
     <TabsContent value="details" className="flex flex-col gap-6">
@@ -32,8 +36,12 @@ export function DetailsStep({
               id="roster-name"
               placeholder="Name your roster..."
               value={value.name}
+              aria-invalid={nameError ? true : undefined}
               onChange={(e) => onChange({ ...value, name: e.target.value })}
             />
+            {nameError && (
+              <p className="text-sm text-destructive">{nameError}</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -50,10 +58,14 @@ export function DetailsStep({
               id="roster-description"
               placeholder="Describe your roster..."
               value={value.description}
+              aria-invalid={descriptionError ? true : undefined}
               onChange={(e) =>
                 onChange({ ...value, description: e.target.value })
               }
             />
+            {descriptionError && (
+              <p className="text-sm text-destructive">{descriptionError}</p>
+            )}
           </div>
         </CardContent>
       </Card>

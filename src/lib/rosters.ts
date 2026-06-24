@@ -7,18 +7,21 @@ export type Roster = {
   defenseOvr: number;
   rating: number;
   likes: number;
+  dislikes: number;
+  userVote?: "like" | "dislike" | null;
   author?: string;
   createdAt: string;
   updatedAt: string;
 };
 export const MAX_PUBLIC_ROSTERS = 50;
+export const MAX_ROSTERS_PER_USER = 10;
 
 export const ROSTER_SORTS = {
   recent: "Recently edited",
   likes: "Most liked",
   rating: "Highest rated",
   ovr: "Highest OVR",
-  name: "Name (A–Z)",
+  name: "Name (A-Z)",
 } as const;
 
 export type RosterSort = keyof typeof ROSTER_SORTS;
