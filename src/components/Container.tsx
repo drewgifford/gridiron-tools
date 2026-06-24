@@ -20,5 +20,7 @@ export default function Container({
     classes = "max-w-prose";
   }
 
-  return <div className={cn(classes, "mx-auto", className)}>{children}</div>;
+  return (
+    <div className={cn(classes, "mx-auto px-4", className)}>{children}</div>
+  );
 }

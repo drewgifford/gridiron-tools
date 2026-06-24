@@ -15,9 +15,9 @@ import {
 import {
   MAX_PUBLIC_ROSTERS,
   ROSTER_SORTS,
-  type Roster,
   type RosterSort,
 } from "@/lib/rosters";
+import type { Roster } from "@/lib/schema/roster";
 
 const ALL_PRESETS = "all";
 
@@ -136,7 +136,7 @@ export function PublicRosters({
       <p aria-live="polite" className="text-sm text-muted-foreground">
         Showing {rosters.length} roster{rosters.length === 1 ? "" : "s"}
         {atLimit &&
-          ` (max ${MAX_PUBLIC_ROSTERS} — refine your search to narrow)`}
+          ` (max ${MAX_PUBLIC_ROSTERS} - refine your search to narrow)`}
       </p>
 
       {rosters.length > 0 ? (

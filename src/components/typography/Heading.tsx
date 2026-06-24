@@ -60,7 +60,7 @@ export function Heading4({ id, className, children }: HeadingParams) {
 
 export function Text({ id, className, children }: HeadingParams) {
   return (
-    <p id={id} className={cn(className, "leading-7 not-first:mt-2")}>
+    <p id={id} className={cn(className, "not-first:my-4")}>
       {children}
     </p>
   );

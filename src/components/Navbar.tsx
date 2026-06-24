@@ -1,8 +1,10 @@
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { football } from "@lucide/lab";
-import { ExternalLink, HardHat, Home, Icon } from "lucide-react";
+import { ExternalLink, Icon } from "lucide-react";
 import Link from "next/link";
 import Container from "./Container";
+import { MobileNav } from "./MobileNav";
+import { navLinks } from "./nav-links";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import {
@@ -15,7 +17,7 @@ import {
 export default async function Navbar() {
   return (
     <Container>
-      <div className="grid grid-cols-3 items-center bg-background p-2">
+      <div className="grid grid-cols-2 items-center bg-background p-2 md:grid-cols-3">
         <Link href="/" className="justify-self-start font-semibold text-lg">
           <span className="flex gap-1 items-center">
             <Icon iconNode={football} className="w-4 h-4" />
@@ -24,28 +26,21 @@ export default async function Navbar() {
             </span>
           </span>
         </Link>
-        <NavigationMenu className="justify-self-center">
+        <NavigationMenu className="hidden justify-self-center md:flex">
           <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/">
-                  <Home />
-                  <span>Home</span>
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/roster-creator">
-                  <HardHat />
-                  <span>Roster Creator</span>
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {navLinks.map(({ href, label, icon: LinkIcon }) => (
+              <NavigationMenuItem key={href}>
+                <NavigationMenuLink asChild>
+                  <Link href={href}>
+                    <LinkIcon />
+                    <span>{label}</span>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="flex items-center gap-2 justify-self-end">
+        <div className="hidden items-center gap-2 justify-self-end md:flex">
           <Button variant="ghost">
             Install the extension <ExternalLink />
           </Button>
@@ -61,6 +56,10 @@ export default async function Navbar() {
               <Button>Sign In</Button>
             </SignInButton>
           </Show>
+        </div>
+
+        <div className="justify-self-end md:hidden">
+          <MobileNav />
         </div>
       </div>
     </Container>

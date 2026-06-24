@@ -9,14 +9,15 @@
  * rather than stacking duplicates. Deleting a roster cascades to its likes.
  */
 import { inArray } from "drizzle-orm";
+import { client, db } from "@/db/db-client";
 import { rosterLikes, rostersTable } from "@/db/schema";
-import { client, db } from "@/lib/db/db";
 
 /** Clerk user the seeded "My Rosters" are attributed to. */
 const ownerId = "user_3FWA7zaz0kTtCI1JXPPUlHuXXgV";
 
 type SeedRoster = {
   name: string;
+  description: string;
   preset: string;
   ovr: number;
   offenseOvr: number;
@@ -34,6 +35,7 @@ type SeedRoster = {
 const ownedRosters: SeedRoster[] = [
   {
     name: "Prairie Hawks",
+    description: "Ted Lasso offense. Total football baby. Oh, wrong sport?",
     preset: "Balanced",
     ovr: 87,
     offenseOvr: 85,
@@ -45,6 +47,7 @@ const ownedRosters: SeedRoster[] = [
   },
   {
     name: "Tempo Raiders",
+    description: "But do they have wenegade waider in the item shop?",
     preset: "Spread Option",
     ovr: 88,
     offenseOvr: 89,
@@ -61,6 +64,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Desert Gunslingers",
     preset: "Air Raid",
+    description: "That looked a little Mahomey",
     ovr: 90,
     offenseOvr: 94,
     defenseOvr: 84,
@@ -73,6 +77,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Smashmouth U",
     preset: "Ground & Pound",
+    description: "JUST RUN THE DAMN BALL",
     ovr: 84,
     offenseOvr: 86,
     defenseOvr: 82,
@@ -85,6 +90,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Iron Curtain",
     preset: "4-3 Defense",
+    description: "Based on the Pittsburgh Steelers.",
     ovr: 86,
     offenseOvr: 80,
     defenseOvr: 92,
@@ -97,6 +103,8 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Capital City Pros",
     preset: "Pro Style",
+    description:
+      "According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible. Yellow, black. Yellow, black. Yellow, black.",
     ovr: 91,
     offenseOvr: 90,
     defenseOvr: 91,
@@ -109,6 +117,8 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Bayou Bombers",
     preset: "Air Raid",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     ovr: 89,
     offenseOvr: 93,
     defenseOvr: 83,
@@ -121,6 +131,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Mountain Maulers",
     preset: "Ground & Pound",
+    description: "Lorem ipsum dolor sit amet",
     ovr: 85,
     offenseOvr: 88,
     defenseOvr: 81,
@@ -133,6 +144,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Coastal Cannons",
     preset: "Balanced",
+    description: "Evil Larry made this roster",
     ovr: 88,
     offenseOvr: 87,
     defenseOvr: 89,
@@ -145,6 +157,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "River City Rebels",
     preset: "Spread Option",
+    description: "A fun roster I made in my free time. Generated",
     ovr: 86,
     offenseOvr: 88,
     defenseOvr: 83,
@@ -157,6 +170,7 @@ const publicRosters: SeedRoster[] = [
   {
     name: "Summit Sentinels",
     preset: "Pro Style",
+    description: "A pro style offense based on the Akron Pros",
     ovr: 90,
     offenseOvr: 89,
     defenseOvr: 90,
@@ -221,6 +235,7 @@ async function seed() {
         seedRosters.map((roster) => ({
           userId: roster.userId,
           name: roster.name,
+          description: roster.description,
           preset: roster.preset,
           ovr: roster.ovr,
           offenseOvr: roster.offenseOvr,

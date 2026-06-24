@@ -6,17 +6,15 @@ import {
   eq,
   getTableColumns,
   ilike,
-  ne,
   or,
   type SQL,
 } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
+import { db } from "@/db/db-client";
 import { rosterLikes, rostersTable } from "@/db/schema";
-import {
-  MAX_PUBLIC_ROSTERS,
-  type Roster,
-  type RosterSort,
-} from "@/lib/rosters";
-import { db } from "./db";
+import { MAX_PUBLIC_ROSTERS, type RosterSort } from "@/lib/rosters";
+import { type Roster, ZRoster } from "@/lib/schema/roster";
+import { attachAuthors } from "@/lib/util/resolve-author";
 
 const SORT_ORDER: Record<RosterSort, SQL> = {
   recent: desc(rostersTable.updatedAt),
@@ -49,9 +47,11 @@ async function listRosters({
 
   const rows = await (limit ? query.limit(limit) : query);
 
-  return rows.map((row) => ({
+  const mappedRows: Roster[] = rows.map((row) => ({
     id: row.id,
+    userId: row.userId,
     name: row.name,
+    description: row.description,
     preset: row.preset,
     ovr: row.ovr,
     offenseOvr: row.offenseOvr,
@@ -60,7 +60,11 @@ async function listRosters({
     likes: row.likes,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    user: null,
   }));
+
+  const rostersWithAuthors = await attachAuthors(mappedRows);
+  return ZRoster.array().parse(rostersWithAuthors);
 }
 
 export function getRostersByUser(userId: string): Promise<Roster[]> {
@@ -68,25 +72,23 @@ export function getRostersByUser(userId: string): Promise<Roster[]> {
 }
 
 export type PublicRosterQuery = {
-  excludeUserId?: string;
   search?: string;
   preset?: string;
   sort?: RosterSort;
 };
 
 export function getPublicRosters({
-  excludeUserId,
   search,
   preset,
   sort = "recent",
 }: PublicRosterQuery = {}): Promise<Roster[]> {
   const filters = [
-    excludeUserId ? ne(rostersTable.userId, excludeUserId) : undefined,
     preset ? eq(rostersTable.preset, preset) : undefined,
     search
       ? or(
           ilike(rostersTable.name, `%${search}%`),
           ilike(rostersTable.preset, `%${search}%`),
+          ilike(rostersTable.description, `%${search}%`),
         )
       : undefined,
   ];
@@ -98,10 +100,39 @@ export function getPublicRosters({
   });
 }
 
+export async function getPublicRostersCached(query: PublicRosterQuery = {}) {
+  return unstable_cache(
+    () => {
+      return getPublicRosters(query);
+    },
+    [
+      "get-public-rosters",
+      query.preset ?? "",
+      query.search ?? "",
+      query.sort ?? "",
+    ],
+    {
+      revalidate: 60,
+    },
+  )();
+}
+
 export async function getRosterPresets(): Promise<string[]> {
   const rows = await db
     .selectDistinct({ preset: rostersTable.preset })
     .from(rostersTable)
     .orderBy(asc(rostersTable.preset));
   return rows.map((row) => row.preset);
+}
+
+export async function getRosterPresetsCached() {
+  return unstable_cache(
+    () => {
+      return getRosterPresets();
+    },
+    ["get-roster-presets"],
+    {
+      revalidate: 60 * 60,
+    },
+  )();
 }

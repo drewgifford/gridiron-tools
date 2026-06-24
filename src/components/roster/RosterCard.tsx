@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { Computer, User, Verified } from "lucide-react";
 import Link from "next/link";
 import { RosterActions } from "@/components/roster/RosterActions";
 import { StarRating } from "@/components/roster/StarRating";
@@ -12,8 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Roster } from "@/lib/rosters";
+import type { Roster } from "@/lib/schema/roster";
 import { cn } from "@/lib/utils";
+import { Text } from "../typography/Heading";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -64,12 +65,17 @@ export function RosterCard({ roster }: { roster: Roster }) {
         </CardTitle>
         <CardDescription className="flex items-center gap-2">
           <Badge variant="secondary">{roster.preset}</Badge>
-          {roster.author ? (
+          {roster.user ? (
             <span className="flex items-center gap-1">
               <User className="size-3.5" />
-              {roster.author}
+              {roster.user.name}
             </span>
-          ) : null}
+          ) : (
+            <span className="flex items-center gap-1">
+              <Computer className="size-3.5" />
+              gridiron.tools <Verified className="w-4 h-4 text-primary" />
+            </span>
+          )}
         </CardDescription>
         <CardAction>
           <div className="flex flex-col items-end gap-1">
@@ -81,6 +87,12 @@ export function RosterCard({ roster }: { roster: Roster }) {
         </CardAction>
       </CardHeader>
       <CardContent>
+        {roster.description && (
+          <Text className="text-sm text-muted-foreground mb-2">
+            {roster.description}
+          </Text>
+        )}
+
         <div className="grid grid-cols-3 gap-2">
           <Stat label="OVR" value={roster.ovr} highlight />
           <Stat label="Offense" value={roster.offenseOvr} />

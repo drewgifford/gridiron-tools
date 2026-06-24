@@ -69,7 +69,7 @@ export default function Home() {
             </Text>
             <Button asChild size="lg">
               <Link href="/roster-creator">
-                Open Roster Creator
+                Open Roster Builder
                 <ArrowRight />
               </Link>
             </Button>
@@ -87,10 +87,10 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <ToolCard
-                href="/roster-creator"
+                href="/roster-builder"
                 icon={<HardHat className="size-5" />}
-                title="Roster Creator"
-                description="Build, rate, and share rosters for Team Builder — and browse public rosters from the community."
+                title="Roster Builder"
+                description="Build, rate, and share rosters for Team Builder, and browse public rosters from the community."
               />
               <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-[min(var(--radius-4xl),24px)] border-2 border-dashed border-border p-6 text-center text-muted-foreground">
                 <Wrench className="size-5" />
