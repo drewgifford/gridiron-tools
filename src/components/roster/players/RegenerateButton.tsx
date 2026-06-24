@@ -31,7 +31,7 @@ export function RegenerateButton({
         onClick={() => setOpen(true)}
       >
         <RefreshCw />
-        Regenerate {count > 0 && "All"}
+        Regenerate {count > 1 && "All"}
       </Button>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>

@@ -96,3 +96,6 @@ export const getPositionGroup = (position: RosterPosition) =>
 
 export const isOffense = (position: RosterPosition) =>
   getPositionGroup(position).unit === "Offense";
+
+export const isDefense = (position: RosterPosition) =>
+  getPositionGroup(position).unit === "Defense";

@@ -35,7 +35,7 @@ export const ZRosterInput = z.object({
   defensiveScheme: z.string().min(1),
   offensiveOvr: z.number().int().min(30).max(99),
   defensiveOvr: z.number().int().min(30).max(99),
-  rating: z.number().min(1).max(5),
+  rating: z.number().min(0.5).max(5),
   playerCount: z.number().int().min(1, "Generate players before saving."),
 });
 

@@ -13,6 +13,7 @@ export async function attachAuthors<T extends WithUserId>(
   objs: T[],
 ): Promise<(T & WithUser)[]> {
   const userIds = new Set(objs.map((obj) => obj.userId));
+  if (userIds.size === 0) return objs.map((obj) => ({ ...obj, user: null }));
 
   const { data } = await clerk.users.getUserList({
     userId: Array.from(userIds),

@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useNumberInput } from "@/lib/client/use-number-input";
 import {
   getStatName,
   type PlayerStat,
@@ -7,7 +8,6 @@ import {
   Stats,
 } from "@/lib/domain/stats";
 import { ovrBoxClass } from "@/lib/util/ovr-color";
-import { clamp } from "@/lib/util/random";
 import { cn } from "@/lib/utils";
 
 const ALL_STATS = Object.keys(Stats) as PlayerStat[];
@@ -23,6 +23,8 @@ function StatInput({
   onChange: (value: number) => void;
   readOnly?: boolean;
 }) {
+  const input = useNumberInput(value, 1, 99, onChange);
+
   if (readOnly)
     return (
       <div className="flex items-center justify-between gap-2 rounded-md bg-muted/30 px-2 py-1">
@@ -48,10 +50,9 @@ function StatInput({
         type="number"
         min={1}
         max={99}
-        value={value}
-        onChange={(e) =>
-          onChange(clamp(Math.round(Number(e.target.value) || 0), 1, 99))
-        }
+        value={input.value}
+        onChange={(e) => input.onChange(e.target.value)}
+        onBlur={input.onBlur}
         className="w-11 rounded bg-input/50 px-1 py-0.5 text-right text-sm font-semibold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
       />
     </label>

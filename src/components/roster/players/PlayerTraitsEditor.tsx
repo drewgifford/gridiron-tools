@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNumberInput } from "@/lib/client/use-number-input";
 import {
   Dealbreakers,
   DevTraits,
@@ -15,7 +16,6 @@ import {
   PlayerYears,
 } from "@/lib/domain/player-traits";
 import type { GeneratedPlayer } from "@/lib/roster-generator";
-import { clamp } from "@/lib/util/random";
 
 function formatHeight(inches: number) {
   return `${Math.floor(inches / 12)}'${inches % 12}"`;
@@ -75,6 +75,8 @@ function NumberField({
   onChange: (value: number) => void;
   readOnly?: boolean;
 }) {
+  const input = useNumberInput(value, min, max, onChange);
+
   return (
     <div className="flex flex-col gap-1">
       <Label className="text-xs text-muted-foreground">
@@ -91,10 +93,9 @@ function NumberField({
           type="number"
           min={min}
           max={max}
-          value={value}
-          onChange={(e) =>
-            onChange(clamp(Math.round(Number(e.target.value) || 0), min, max))
-          }
+          value={input.value}
+          onChange={(e) => input.onChange(e.target.value)}
+          onBlur={input.onBlur}
         />
       )}
     </div>
@@ -105,10 +106,12 @@ export function PlayerTraitsEditor({
   player,
   onChange,
   readOnly,
+  hideJersey,
 }: {
   player: GeneratedPlayer;
   onChange: (patch: Partial<GeneratedPlayer>) => void;
   readOnly?: boolean;
+  hideJersey?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -120,14 +123,16 @@ export function PlayerTraitsEditor({
           onChange={(classYear) => onChange({ classYear })}
           readOnly={readOnly}
         />
-        <NumberField
-          label="Jersey #"
-          value={player.jerseyNumber}
-          min={0}
-          max={99}
-          onChange={(jerseyNumber) => onChange({ jerseyNumber })}
-          readOnly={readOnly}
-        />
+        {!hideJersey && (
+          <NumberField
+            label="Jersey #"
+            value={player.jerseyNumber}
+            min={0}
+            max={99}
+            onChange={(jerseyNumber) => onChange({ jerseyNumber })}
+            readOnly={readOnly}
+          />
+        )}
         <NumberField
           label="Age"
           value={player.age ?? 18}

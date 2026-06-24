@@ -237,12 +237,17 @@ export function getJerseyNumber(
   group: PositionGroupId,
   used: Set<number>,
 ): number {
-  const numbers: number[] = [];
+  const preferred: number[] = [];
   for (const [min, max] of POSITION_META[group].numberRanges) {
-    for (let n = min; n <= max; n++) numbers.push(n);
+    for (let n = min; n <= max; n++) preferred.push(n);
   }
-  const free = numbers.filter((n) => !used.has(n));
-  return pick(free.length > 0 ? free : numbers);
+  const freePreferred = preferred.filter((n) => !used.has(n));
+  if (freePreferred.length > 0) return pick(freePreferred);
+
+  // Preferred range exhausted: take any unused number so jerseys stay unique.
+  const freeAny: number[] = [];
+  for (let n = 0; n <= 99; n++) if (!used.has(n)) freeAny.push(n);
+  return freeAny.length > 0 ? pick(freeAny) : pick(preferred);
 }
 
 const TRAIT_COSTS = [2, 4, 6, 8];

@@ -5,10 +5,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath, updateTag } from "next/cache";
 import { db } from "@/db/db-client";
 import { playersTable, rostersTable } from "@/db/schema";
-import { isOffense } from "@/lib/domain/positions";
+import { isDefense, isOffense } from "@/lib/domain/positions";
 import type { PublishStatus } from "@/lib/domain/roster";
 import type { GeneratedPlayer } from "@/lib/roster-generator";
 import { MAX_ROSTERS_PER_USER } from "@/lib/rosters";
+import { ZGeneratedPlayers } from "@/lib/schema/player-input";
 import { ZRosterInput } from "@/lib/schema/roster-input";
 
 export type CreateRosterInput = {
@@ -63,6 +64,14 @@ function buildRoster(input: CreateRosterInput) {
     };
   }
 
+  const playersParsed = ZGeneratedPlayers.safeParse(input.players);
+  if (!playersParsed.success) {
+    return {
+      ok: false as const,
+      error: "Some players are invalid. Try regenerating the roster.",
+    };
+  }
+
   const data = parsed.data;
   const players = input.players;
   return {
@@ -77,7 +86,7 @@ function buildRoster(input: CreateRosterInput) {
         players.filter((p) => isOffense(p.position)).map((p) => p.overall),
       ),
       defenseOvr: average(
-        players.filter((p) => !isOffense(p.position)).map((p) => p.overall),
+        players.filter((p) => isDefense(p.position)).map((p) => p.overall),
       ),
       status: data.status,
       rating: data.rating,

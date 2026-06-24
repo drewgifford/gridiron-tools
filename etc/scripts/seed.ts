@@ -240,6 +240,7 @@ async function seed() {
           ovr: roster.ovr,
           offenseOvr: roster.offenseOvr,
           defenseOvr: roster.defenseOvr,
+          status: "published" as const,
           rating: roster.rating,
           createdAt: new Date(roster.createdAt),
           updatedAt: new Date(roster.updatedAt),

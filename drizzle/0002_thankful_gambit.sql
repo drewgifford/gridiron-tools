@@ -1,1 +1,0 @@
-ALTER TABLE "rosters" ADD COLUMN "description" text NOT NULL;

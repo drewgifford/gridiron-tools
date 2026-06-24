@@ -1,14 +1,12 @@
 import { Computer, User, Verified } from "lucide-react";
 import Link from "next/link";
 import { RosterActions } from "@/components/roster/RosterActions";
-import { StarRating } from "@/components/roster/StarRating";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";

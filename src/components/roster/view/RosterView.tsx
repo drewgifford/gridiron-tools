@@ -95,31 +95,32 @@ export function RosterView({
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-3">
-          {isOwner && (
-            <div className="flex items-center gap-2">
-              <Button asChild variant="secondary" size="sm">
-                <Link href={`/roster-builder/roster/${roster.id}/edit`}>
-                  <Pencil />
-                  Edit
-                </Link>
-              </Button>
-              <DeleteRosterButton
-                rosterId={roster.id}
-                rosterName={roster.name}
-                redirectTo="/roster-builder/my-rosters"
-                label
-              />
-
-              <RosterActions
-                rosterId={roster.id}
-                rosterName={roster.name}
-                likes={likes}
-                dislikes={dislikes}
-                userVote={userVote}
-                isSignedIn={isSignedIn}
-              />
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <>
+                <Button asChild variant="secondary" size="sm">
+                  <Link href={`/roster-builder/roster/${roster.id}/edit`}>
+                    <Pencil />
+                    Edit
+                  </Link>
+                </Button>
+                <DeleteRosterButton
+                  rosterId={roster.id}
+                  rosterName={roster.name}
+                  redirectTo="/roster-builder/my-rosters"
+                  label
+                />
+              </>
+            )}
+            <RosterActions
+              rosterId={roster.id}
+              rosterName={roster.name}
+              likes={likes}
+              dislikes={dislikes}
+              userVote={userVote}
+              isSignedIn={isSignedIn}
+            />
+          </div>
           <div className="flex items-center gap-2">
             <OvrBox label="OVR" value={roster.ovr} />
             <OvrBox label="OFF" value={roster.offenseOvr} />

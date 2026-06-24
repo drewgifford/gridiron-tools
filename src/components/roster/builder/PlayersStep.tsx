@@ -66,7 +66,7 @@ export function PlayersStep({
             className={cn(
               "sticky top-4 self-start rounded-2xl",
               editor
-                ? "max-h-[calc(100vh-2rem)] overflow-y-auto border bg-card p-4"
+                ? "max-h-[calc(100vh-8rem)] overflow-y-auto border bg-card p-4"
                 : "border border-dashed p-10 text-center text-sm text-muted-foreground",
             )}
           >

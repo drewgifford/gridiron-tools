@@ -118,19 +118,25 @@ export type PublicRosterQuery = {
   sort?: RosterSort;
 };
 
+/** Escape LIKE/ILIKE wildcards so user input is matched literally. */
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
 export function getPublicRosters({
   search,
   preset,
   sort = "recent",
 }: PublicRosterQuery = {}): Promise<Roster[]> {
+  const term = search ? `%${escapeLike(search)}%` : undefined;
   const filters = [
     eq(rostersTable.status, "published"),
     preset ? eq(rostersTable.preset, preset) : undefined,
-    search
+    term
       ? or(
-          ilike(rostersTable.name, `%${search}%`),
-          ilike(rostersTable.preset, `%${search}%`),
-          ilike(rostersTable.description, `%${search}%`),
+          ilike(rostersTable.name, term),
+          ilike(rostersTable.preset, term),
+          ilike(rostersTable.description, term),
         )
       : undefined,
   ];
@@ -187,6 +193,7 @@ export async function getRosterPresets(): Promise<string[]> {
   const rows = await db
     .selectDistinct({ preset: rostersTable.preset })
     .from(rostersTable)
+    .where(eq(rostersTable.status, "published"))
     .orderBy(asc(rostersTable.preset));
   return rows.map((row) => row.preset);
 }

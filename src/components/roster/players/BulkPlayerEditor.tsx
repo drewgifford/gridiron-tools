@@ -194,7 +194,7 @@ export function BulkPlayerEditor({
       />
 
       <SectionDivider label="Attributes" />
-      <PlayerTraitsEditor player={lead} onChange={applyPatch} />
+      <PlayerTraitsEditor player={lead} onChange={applyPatch} hideJersey />
 
       <SectionDivider label="Abilities" />
       {sameArchetype ? (
