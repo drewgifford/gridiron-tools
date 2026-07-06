@@ -33,7 +33,7 @@ export const ARCHETYPE_NAMES = {
     "Pure Possession",
   ],
   OL: ["Pass Protector", "Raw Strength", "Well Rounded", "Agile"],
-  DL: ["Gap Specialist", "Pure Power", "Speed Rusher", "Power Rusher"],
+  DL: ["Edge Setter", "Pure Power", "Speed Rusher", "Power Rusher"],
   LB: ["Lurker", "Signal Caller", "Thumper"],
   CB: ["Boundary", "Bump and Run", "Field", "Zone"],
   S: ["Box Specialist", "Coverage Specialist", "Hybrid"],

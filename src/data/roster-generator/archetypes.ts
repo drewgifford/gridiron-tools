@@ -161,9 +161,9 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
       name: "Pure Runner",
       abilities: [
         {
-          name: "Magician",
+          name: "Downhill",
           requirements: {
-            SPD: [84, 86, 91, 92],
+            BTK: [85, 87, 91, 92],
           },
         },
         {
@@ -631,7 +631,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Arm Bar",
           requirements: {
-            SFA: [83, 86, 90, 96],
+            SFA: [83, 86, 90, 93],
           },
         },
       ],
@@ -2296,7 +2296,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
   ],
   LE: [
     {
-      name: "Gap Specialist",
+      name: "Edge Setter",
       abilities: [
         {
           name: "Grip Breaker",
@@ -2307,7 +2307,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Inside Disruptor",
           requirements: {
-            BSH: [88, 90, 93, 94],
+            BSH: [87, 89, 92, 94],
           },
         },
         {
@@ -2325,7 +2325,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Workhorse",
           requirements: {
-            TGH: [85, 89, 93, 98],
+            TGH: [92, 93, 94, 96],
           },
         },
       ],
@@ -2371,7 +2371,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Workhorse",
           requirements: {
-            TGH: [80, 85, 90, 97],
+            TGH: [90, 92, 94, 96],
           },
         },
         {
@@ -2470,19 +2470,19 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Grip Breaker",
           requirements: {
-            STR: [84, 89, 94, 99],
+            STR: [94, 95, 96, 97],
           },
         },
         {
           name: "Workhorse",
           requirements: {
-            TGH: [86, 88, 90, 94],
+            TGH: [90, 92, 94, 96],
           },
         },
         {
           name: "Take Down",
           requirements: {
-            TAK: [88, 89, 91, 94],
+            TAK: [86, 88, 90, 92],
           },
         },
       ],
@@ -2506,7 +2506,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
   ],
   RE: [
     {
-      name: "Gap Specialist",
+      name: "Edge Setter",
       abilities: [
         {
           name: "Grip Breaker",
@@ -2517,7 +2517,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Inside Disruptor",
           requirements: {
-            BSH: [88, 90, 93, 94],
+            BSH: [87, 89, 92, 94],
           },
         },
         {
@@ -2535,7 +2535,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Workhorse",
           requirements: {
-            TGH: [85, 89, 93, 98],
+            TGH: [92, 93, 94, 96],
           },
         },
       ],
@@ -2581,7 +2581,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Workhorse",
           requirements: {
-            TGH: [80, 85, 90, 97],
+            TGH: [90, 92, 94, 96],
           },
         },
         {
@@ -2680,19 +2680,19 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Grip Breaker",
           requirements: {
-            STR: [84, 89, 94, 99],
+            STR: [94, 95, 96, 97],
           },
         },
         {
           name: "Workhorse",
           requirements: {
-            TGH: [86, 88, 90, 94],
+            TGH: [90, 92, 94, 96],
           },
         },
         {
           name: "Take Down",
           requirements: {
-            TAK: [88, 89, 91, 94],
+            TAK: [86, 88, 90, 92],
           },
         },
       ],
@@ -2715,56 +2715,6 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
     },
   ],
   DT: [
-    {
-      name: "Gap Specialist",
-      abilities: [
-        {
-          name: "Grip Breaker",
-          requirements: {
-            STR: [94, 95, 96, 97],
-          },
-        },
-        {
-          name: "Inside Disruptor",
-          requirements: {
-            BSH: [88, 90, 93, 94],
-          },
-        },
-        {
-          name: "Outside Disruptor",
-          requirements: {
-            BSH: [88, 90, 93, 94],
-          },
-        },
-        {
-          name: "Option Disruptor",
-          requirements: {
-            PRC: [85, 88, 90, 94],
-          },
-        },
-        {
-          name: "Workhorse",
-          requirements: {
-            TGH: [85, 89, 93, 98],
-          },
-        },
-      ],
-      ovrFormula: {
-        intercept: -60.8563,
-        weights: {
-          SPD: 0.0684,
-          STR: 0.3586,
-          AGI: 0.0509,
-          ACC: 0.0973,
-          AWR: 0.0703,
-          PRC: 0.203,
-          TAK: 0.2883,
-          POW: 0.0475,
-          BSH: 0.3754,
-          PUR: 0.1364,
-        },
-      },
-    },
     {
       name: "Pure Power",
       abilities: [
@@ -2814,59 +2764,6 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
           PMV: 0.309,
           BSH: 0.2553,
           PUR: 0.052,
-        },
-      },
-    },
-    {
-      name: "Speed Rusher",
-      abilities: [
-        {
-          name: "Quick Jump",
-          requirements: {
-            ACC: [89, 91, 93, 94],
-          },
-        },
-        {
-          name: "Duress",
-          requirements: {
-            PMV: [88, 89, 91, 94],
-            FMV: [88, 89, 91, 94],
-          },
-        },
-        {
-          name: "Take Down",
-          requirements: {
-            TAK: [82, 87, 91, 97],
-          },
-        },
-        {
-          name: "Pocket Disruptor",
-          requirements: {
-            FMV: [88, 89, 91, 94],
-          },
-        },
-        {
-          name: "Recoup",
-          requirements: {
-            STA: [86, 88, 90, 92],
-          },
-        },
-      ],
-      ovrFormula: {
-        intercept: -61.2865,
-        weights: {
-          SPD: 0.102,
-          STR: 0.2909,
-          AGI: 0.0691,
-          ACC: 0.1371,
-          AWR: 0.2231,
-          PRC: 0.0492,
-          TAK: 0.2218,
-          POW: 0.0324,
-          PMV: 0.0164,
-          FMV: 0.3747,
-          BSH: 0.0687,
-          PUR: 0.1181,
         },
       },
     },
@@ -2982,7 +2879,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Take Down",
           requirements: {
-            STR: [84, 86, 88, 92],
+            STR: [86, 88, 90, 92],
           },
         },
         {
@@ -3140,7 +3037,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Take Down",
           requirements: {
-            STR: [84, 86, 88, 92],
+            STR: [86, 88, 90, 92],
           },
         },
         {
@@ -3298,7 +3195,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Take Down",
           requirements: {
-            STR: [84, 86, 88, 92],
+            STR: [86, 88, 90, 92],
           },
         },
         {
@@ -3362,7 +3259,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Aftershock",
           requirements: {
-            POW: [88, 90, 92, 94],
+            POW: [84, 88, 92, 95],
           },
         },
         {
@@ -3374,7 +3271,7 @@ export const PositionArchetypes: Record<RosterPosition, PlayerArchetype[]> = {
         {
           name: "Hammer",
           requirements: {
-            BSH: [83, 85, 87, 89],
+            BSH: [86, 88, 90, 93],
           },
         },
       ],

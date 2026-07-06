@@ -26,7 +26,6 @@ export const PhysicalAbilities = [
   "Mobile Resistance",
   "Resistance",
   "Step Up",
-  "Magician",
   "Shifty",
   "Side Step",
   "Workhorse",
