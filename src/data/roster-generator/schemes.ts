@@ -134,7 +134,7 @@ export const DEFENSE_SCHEMES: Record<DefenseScheme, SchemeData> = {
     archetypeWeights: {
       DL: {
         "Speed Rusher": 3,
-        "Gap Specialist": 2.5,
+        "Edge Setter": 2.5,
         "Power Rusher": 2,
         "Pure Power": 1.5,
       },
@@ -162,9 +162,7 @@ export const DEFENSE_SCHEMES: Record<DefenseScheme, SchemeData> = {
     archetypeWeights: {
       DL: {
         "Pure Power": 3,
-        "Gap Specialist": 3,
         "Power Rusher": 1.5,
-        "Speed Rusher": 1,
       },
       LB: {
         Thumper: 3,
@@ -190,7 +188,7 @@ export const DEFENSE_SCHEMES: Record<DefenseScheme, SchemeData> = {
     archetypeWeights: {
       DL: {
         "Speed Rusher": 2.5,
-        "Gap Specialist": 2.5,
+        "Edge Setter": 2.5,
         "Power Rusher": 2,
         "Pure Power": 1,
       },
@@ -219,7 +217,7 @@ export const DEFENSE_SCHEMES: Record<DefenseScheme, SchemeData> = {
       DL: {
         "Speed Rusher": 3,
         "Power Rusher": 2.5,
-        "Gap Specialist": 2,
+        "Edge Setter": 2,
         "Pure Power": 1,
       },
       LB: {

@@ -1,0 +1,36 @@
+name: PR Checks
+
+on:
+  pull_request:
+
+# Cancel superseded runs on the same PR so only the latest push burns CI time.
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Typecheck, lint & format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Cache Bun packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - run: bun install --frozen-lockfile
+
+      - name: Lint & format (Biome)
+        run: bunx biome ci
+
+      - name: Typecheck (tsc)
+        if: ${{ !cancelled() }}
+        run: bun run typecheck
