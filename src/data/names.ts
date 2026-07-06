@@ -1,0 +1,88 @@
+import { isNameClean } from "@/lib/util/profanity";
+import { pick } from "@/lib/util/random";
+
+const FIRST_NAMES = [
+  "James",
+  "Michael",
+  "Marcus",
+  "Tyler",
+  "Jalen",
+  "Trevor",
+  "Cameron",
+  "Devin",
+  "Isaiah",
+  "Xavier",
+  "Caleb",
+  "Jordan",
+  "Mason",
+  "Ethan",
+  "Brandon",
+  "Damon",
+  "Elijah",
+  "Malik",
+  "Carson",
+  "Hunter",
+  "Dante",
+  "Kareem",
+  "Logan",
+  "Nico",
+  "Quincy",
+  "Rashad",
+  "Silas",
+  "Travis",
+  "Amari",
+  "Bryce",
+  "Deshawn",
+  "Gavin",
+  "Keon",
+  "Landon",
+  "Omar",
+] as const;
+
+const LAST_NAMES = [
+  "Johnson",
+  "Williams",
+  "Brown",
+  "Davis",
+  "Carter",
+  "Mitchell",
+  "Jackson",
+  "Robinson",
+  "Harris",
+  "Coleman",
+  "Bennett",
+  "Foster",
+  "Hayes",
+  "Powell",
+  "Sanders",
+  "Bryant",
+  "Reed",
+  "Crawford",
+  "Hughes",
+  "Greene",
+  "Watkins",
+  "Spencer",
+  "Dixon",
+  "Holland",
+  "Patterson",
+  "Mccoy",
+  "Vaughn",
+  "Bishop",
+  "Caldwell",
+  "Doyle",
+  "Frazier",
+  "Lambert",
+  "Newton",
+  "Ramsey",
+  "Sutton",
+] as const;
+
+const CLEAN_FIRST_NAMES = FIRST_NAMES.filter(isNameClean);
+const CLEAN_LAST_NAMES = LAST_NAMES.filter(isNameClean);
+
+export function generateRandomName() {
+  return {
+    firstName: pick(CLEAN_FIRST_NAMES),
+    lastName: pick(CLEAN_LAST_NAMES),
+  };
+}

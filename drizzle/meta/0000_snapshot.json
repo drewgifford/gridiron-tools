@@ -1,0 +1,483 @@
+{
+  "id": "685174a3-9b61-4111-acbc-ad9cbc77a26d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.players": {
+      "name": "players",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "rosterId": {
+          "name": "rosterId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "rosterPosition",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "depthOrder": {
+          "name": "depthOrder",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jerseyNumber": {
+          "name": "jerseyNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classYear": {
+          "name": "classYear",
+          "type": "playerYear",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'FR'"
+        },
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 18
+        },
+        "heightInches": {
+          "name": "heightInches",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weightLbs": {
+          "name": "weightLbs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "overall": {
+          "name": "overall",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "archetype": {
+          "name": "archetype",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dealbreaker": {
+          "name": "dealbreaker",
+          "type": "playerDealbreaker",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'None'"
+        },
+        "devTrait": {
+          "name": "devTrait",
+          "type": "playerDevTrait",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Normal'"
+        },
+        "potential": {
+          "name": "potential",
+          "type": "playerPotnetial",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Low'"
+        },
+        "handedness": {
+          "name": "handedness",
+          "type": "playerHandedness",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Right'"
+        },
+        "hsStarRating": {
+          "name": "hsStarRating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "skinToneIndex": {
+          "name": "skinToneIndex",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "headIndex": {
+          "name": "headIndex",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "mentalAbilities": {
+          "name": "mentalAbilities",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "physicalAbilities": {
+          "name": "physicalAbilities",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "stats": {
+          "name": "stats",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "players_roster_id_idx": {
+          "name": "players_roster_id_idx",
+          "columns": [
+            {
+              "expression": "rosterId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "players_rosterId_rosters_id_fk": {
+          "name": "players_rosterId_rosters_id_fk",
+          "tableFrom": "players",
+          "tableTo": "rosters",
+          "columnsFrom": ["rosterId"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rosters": {
+      "name": "rosters",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "preset": {
+          "name": "preset",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ovr": {
+          "name": "ovr",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenseOvr": {
+          "name": "offenseOvr",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "defenseOvr": {
+          "name": "defenseOvr",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "publishStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "rating": {
+          "name": "rating",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "rosters_user_id_idx": {
+          "name": "rosters_user_id_idx",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roster_likes": {
+      "name": "roster_likes",
+      "schema": "",
+      "columns": {
+        "rosterId": {
+          "name": "rosterId",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vote": {
+          "name": "vote",
+          "type": "rosterVote",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'like'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "roster_likes_roster_id_idx": {
+          "name": "roster_likes_roster_id_idx",
+          "columns": [
+            {
+              "expression": "rosterId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "roster_likes_rosterId_rosters_id_fk": {
+          "name": "roster_likes_rosterId_rosters_id_fk",
+          "tableFrom": "roster_likes",
+          "tableTo": "rosters",
+          "columnsFrom": ["rosterId"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "roster_likes_rosterId_userId_pk": {
+          "name": "roster_likes_rosterId_userId_pk",
+          "columns": ["rosterId", "userId"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.playerDealbreaker": {
+      "name": "playerDealbreaker",
+      "schema": "public",
+      "values": [
+        "None",
+        "Brand Exposure",
+        "Championship Contender",
+        "Coach Prestige",
+        "Conference Prestige",
+        "Playing Style",
+        "Playing Time",
+        "Pro Potential",
+        "Proximity to Home"
+      ]
+    },
+    "public.playerDevTrait": {
+      "name": "playerDevTrait",
+      "schema": "public",
+      "values": ["Normal", "Impact", "Star", "Elite"]
+    },
+    "public.playerHandedness": {
+      "name": "playerHandedness",
+      "schema": "public",
+      "values": ["Left", "Right"]
+    },
+    "public.playerPotnetial": {
+      "name": "playerPotnetial",
+      "schema": "public",
+      "values": ["Low", "Medium", "High"]
+    },
+    "public.playerYear": {
+      "name": "playerYear",
+      "schema": "public",
+      "values": ["R-FR", "FR", "R-SO", "SO", "R-JR", "JR", "R-SR", "SR"]
+    },
+    "public.publishStatus": {
+      "name": "publishStatus",
+      "schema": "public",
+      "values": ["draft", "published"]
+    },
+    "public.rosterPosition": {
+      "name": "rosterPosition",
+      "schema": "public",
+      "values": [
+        "QB",
+        "WR",
+        "RB",
+        "LT",
+        "LG",
+        "C",
+        "RG",
+        "RT",
+        "TE",
+        "FB",
+        "LE",
+        "RE",
+        "DT",
+        "LOLB",
+        "ROLB",
+        "MLB",
+        "CB",
+        "FS",
+        "SS",
+        "K",
+        "P"
+      ]
+    },
+    "public.rosterVote": {
+      "name": "rosterVote",
+      "schema": "public",
+      "values": ["like", "dislike"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

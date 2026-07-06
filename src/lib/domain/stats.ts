@@ -1,0 +1,66 @@
+export const Stats = {
+  SPD: "Speed",
+  STR: "Strength",
+  AGI: "Agility",
+  ACC: "Acceleration",
+  AWR: "Awareness",
+  INJ: "Injury",
+  TGH: "Toughness",
+  STA: "Stamina",
+  BTK: "Break Tackle",
+  TRK: "Trucking",
+  COD: "Change of Direction",
+  BCV: "Ball Carrier Vision",
+  SFA: "Stiff Arm",
+  SPM: "Spin Move",
+  JKM: "Juke Move",
+  CAR: "Carrying",
+  JMP: "Jump",
+  THP: "Throw Power",
+  SAC: "Short Accuracy",
+  MAC: "Medium Accuracy",
+  DAC: "Deep Accuracy",
+  RUN: "Throw on Run",
+  TUP: "Throw Under Pressure",
+  BSK: "Break Sack",
+  PAC: "Play Action",
+  CTH: "Catching",
+  SRR: "Short Route Running",
+  MRR: "Medium Route Running",
+  DRR: "Deep Route Running",
+  CIT: "Catch in Traffic",
+  SPC: "Spectacular Catch",
+  RLS: "Release",
+  PBK: "Pass Block",
+  PBP: "Pass Block Power",
+  PBF: "Pass Block Finesse",
+  RBK: "Run Block",
+  RBP: "Run Block Power",
+  RBF: "Run Block Finesse",
+  LBK: "Lead Block",
+  IBL: "Impact Blocking",
+  PRC: "Play Recognition",
+  TAK: "Tackle",
+  POW: "Hit Power",
+  PMV: "Power Move",
+  FMV: "Finesse Move",
+  BSH: "Block Shedding",
+  PUR: "Pursuit",
+  MCV: "Man Coverage",
+  ZCV: "Zone Coverage",
+  PRS: "Press",
+  KPW: "Kick Power",
+  KAC: "Kick Accuracy",
+  LSP: "Long Snap",
+  RET: "Return",
+} as const;
+
+export type PlayerStat = keyof typeof Stats;
+
+/** A complete stat line, keyed by stat code. */
+export type PlayerStats = Record<PlayerStat, number>;
+
+export function getStatName(stat: string) {
+  if (stat in Stats) return Stats[stat as keyof typeof Stats];
+  return stat;
+}
